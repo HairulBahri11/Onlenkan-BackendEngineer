@@ -5,44 +5,45 @@ namespace App\Http\Controllers\Api;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\dataProdukResource;
-
 use function PHPUnit\Framework\isTrue;
+
+use App\Http\Resources\dataProdukResource;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ProdukController extends Controller
 {
     public function index()
     {
-        //tampilkan hanya nama_kategori juga hasil relasi dari tabel kategori
-        $produk = Produk::with('datakategori')->get();
-        if ($produk != null) {
+        try {
+            $produk = Produk::with('datakategori')->get();
             return dataProdukResource::collection($produk);
-        } else {
+        } catch (ModelNotFoundException $exception) {
             return response()->json([
                 'success' => false,
                 'message' => 'Data produk kosong',
-                'data' => $produk
-            ], 400);
+                'data' => $exception->getMessage()
+            ], 404);
         }
     }
 
     public function show($id)
     {
-        $produk = Produk::findOrFail($id);
-        if ($produk != null) {
+        try {
+            $produk = Produk::findOrFail($id);
+
             return new dataProdukResource($produk);
-        } else {
+        } catch (ModelNotFoundException $exception) {
             return response()->json([
                 'success' => false,
                 'message' => 'Data produk kosong',
-                'data' => $produk
-            ], 400);
+                'data' => $exception->getMessage()
+            ], 404);
         }
     }
 
     public function store(Request $request)
     {
-        $validasi = $request->validate([
+        $request->validate([
             'nama_produk' => 'required|unique:produk|max:255',
             'kategori_id' => 'required',
             'harga' => 'required',
@@ -58,7 +59,7 @@ class ProdukController extends Controller
             $file->move($tujuan_upload, $nama_file);
         }
 
-        if ($validasi) {
+        try {
             $produk = Produk::create([
                 'nama_produk' => $request->nama_produk,
                 'kategori_id' => $request->kategori_id,
@@ -68,20 +69,19 @@ class ProdukController extends Controller
                 'foto_produk' => $nama_file,
             ]);
 
-            if ($produk) {
-                return new dataProdukResource($produk);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Produk gagal ditambahkan',
-                ], 400);
-            }
+            return new dataProdukResource($produk);
+        } catch (ModelNotFoundException $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Produk gagal ditambahkan',
+                'data' => $exception->getMessage()
+            ], 400);
         }
     }
 
     public function update(Request $request, $id)
     {
-        $validasi = $request->validate([
+        $request->validate([
             'nama_produk' => 'required|unique:produk|max:255',
             'kategori_id' => 'required',
             'harga' => 'required',
@@ -97,53 +97,40 @@ class ProdukController extends Controller
             $file->move($tujuan_upload, $nama_file);
         }
 
-        if (isTrue($validasi)) {
+        try {
             $produk = Produk::findOrFail($id);
-            // $produk->update([
-            //     'nama_produk' => $request->nama_produk,
-            //     'kategori_id' => $request->kategori_id,
-            //     'harga' => $request->harga,
-            //     'stok' => $request->stok,
-            //     'deskripsi' => $request->deskripsi,
-            //     'foto_produk' => $nama_file,
-            // ]);
+            $produk->update([
+                'nama_produk' => $request->nama_produk,
+                'kategori_id' => $request->kategori_id,
+                'harga' => $request->harga,
+                'stok' => $request->stok,
+                'deskripsi' => $request->deskripsi,
+                'foto_produk' => $nama_file,
+            ]);
 
-            $request->foto_produk->move(public_path('images/produk'), $nama_file);
-            $produk->update($request->all());
-
-
-            if ($produk) {
-                return new dataProdukResource($produk);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Produk gagal diupdate',
-                ], 400);
-            }
-        } else {
+            return new dataProdukResource($produk);
+        } catch (ModelNotFoundException $exception) {
             return response()->json([
                 'success' => false,
                 'message' => 'Produk gagal diupdate',
-            ], 401);
+                'data' => $exception->getMessage()
+            ], 400);
         }
     }
 
     public function destroy($id)
     {
-        $produk = Produk::findOrFail($id);
 
-        if ($produk) {
+        try {
+            $produk = Produk::findOrFail($id);
             $produk->delete();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Produk berhasil dihapus',
-            ], 200);
-        } else {
+            return new dataProdukResource($produk);
+        } catch (ModelNotFoundException $exception) {
             return response()->json([
                 'success' => false,
-                'message' => 'Produk gagal dihapus',
-            ], 500);
+                'message' => 'Produk tidak ada',
+                'data' => $exception->getMessage()
+            ], 400);
         }
     }
 }
