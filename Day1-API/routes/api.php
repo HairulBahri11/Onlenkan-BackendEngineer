@@ -32,6 +32,6 @@ Route::prefix('produk')->group(function () {
     Route::get('/', 'App\Http\Controllers\Api\ProdukController@index')->name('produk.index');
     Route::get('/{id}/show', 'App\Http\Controllers\Api\ProdukController@show')->name('produk.show');
     Route::post('/store', 'App\Http\Controllers\Api\ProdukController@store')->name('produk.store');
-    Route::patch('/{id}/update', 'App\Http\Controllers\Api\ProdukController@update')->name('produk.update');
+    Route::post('/{id}/update', 'App\Http\Controllers\Api\ProdukController@update')->name('produk.update');
     Route::delete('/{id}/destroy', 'App\Http\Controllers\Api\ProdukController@destroy')->name('produk.destroy');
 });
