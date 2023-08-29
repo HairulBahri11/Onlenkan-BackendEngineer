@@ -23,6 +23,7 @@ class dataProdukResource extends JsonResource
             'stok' => $this->stok,
             'deskripsi' => $this->deskripsi,
             'foto_produk' => $this->foto_produk,
+            'user_id' => $this->user_id,
         ];
     }
 }

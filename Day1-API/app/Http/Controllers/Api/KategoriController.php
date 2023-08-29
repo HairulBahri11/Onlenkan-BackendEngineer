@@ -5,11 +5,24 @@ namespace App\Http\Controllers\Api;
 use App\Models\Produk;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
+use Illuminate\Auth\Access\Gate;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class KategoriController extends Controller
 {
+    public function __construct()
+    {
+
+        //    panggil semua permission yang telah dibuat untuk kategori
+        $this->middleware('permission:lihat-kategori', ['only' => ['index']]);
+        $this->middleware('permission:tambah-kategori', ['only' => ['store']]);
+        $this->middleware('permission:edit-kategori', ['only' => ['update']]);
+        $this->middleware('permission:hapus-kategori', ['only' => ['destroy']]);
+    }
+
     public function index()
     {
 
@@ -50,11 +63,20 @@ class KategoriController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+
+        $validasi = Validator::make($request->all(), [
             'nama_kategori' => 'required|unique:kategori|max:255',
         ]);
 
+        if ($validasi->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Silahkan isi data dengan benar',
+                'data' => $validasi->errors()
+            ], 422);
+        }
         try {
+
             $kategori = Kategori::create([
                 'nama_kategori' => $request->nama_kategori,
             ]);
@@ -75,9 +97,17 @@ class KategoriController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $validasi = Validator::make($request->all(), [
             'nama_kategori' => 'required|unique:kategori|max:255',
         ]);
+
+        if ($validasi->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Silahkan isi data dengan benar',
+                'data' => $validasi->errors()
+            ], 422);
+        }
         try {
             $kategori = Kategori::findOrFail($id);
             $kategori->update([

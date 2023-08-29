@@ -16,43 +16,48 @@ class produkSeeder extends Seeder
         $arr_produk = [
             [
                 'nama_produk' => 'Wafer Tenggo',
-                'kategori_id' => 11,
+                'kategori_id' => 1,
                 'harga' => 1000,
                 'stok' => 100,
                 'deskripsi' => 'Wafer Tenggo adalah wafer yang sangat enak',
-                'foto_produk' => 'wafer.jpg'
+                'foto_produk' => 'wafer.jpg',
+                'user_id' => 2
             ],
             [
                 'nama_produk' => 'Teh Pucuk',
-                'kategori_id' => 12,
+                'kategori_id' => 2,
                 'harga' => 2000,
                 'stok' => 100,
                 'deskripsi' => 'Teh Pucuk adalah teh sejuk',
-                'foto_produk' => 'tehpucuk.jpg'
+                'foto_produk' => 'tehpucuk.jpg',
+                'user_id' => 3
             ],
             [
                 'nama_produk' => 'Kaos Oblong',
-                'kategori_id' => 13,
+                'kategori_id' => 3,
                 'harga' => 53000,
                 'stok' => 100,
                 'deskripsi' => 'Kaos Oblong adalah kaos nyaman digunakan',
-                'foto_produk' => 'kaos.jpg'
+                'foto_produk' => 'kaos.jpg',
+                'user_id' => 2
             ],
             [
                 'nama_produk' => 'Laptop Asus',
-                'kategori_id' => 14,
+                'kategori_id' => 4,
                 'harga' => 2000000,
                 'stok' => 100,
                 'deskripsi' => 'Laptop Asus adalah laptop paling populer',
-                'foto_produk' => 'laptop.jpg'
+                'foto_produk' => 'laptop.jpg',
+                'user_id' => 2
             ],
             [
                 'nama_produk' => 'Mobil Honda',
-                'kategori_id' => 15,
+                'kategori_id' => 5,
                 'harga' => 75000000,
                 'stok' => 100,
                 'deskripsi' => 'Mobil Honda adalah mobil yang sangat enak',
-                'foto_produk' => 'mobil.jpg'
+                'foto_produk' => 'mobil.jpg',
+                'user_id' => 3
             ],
         ];
 

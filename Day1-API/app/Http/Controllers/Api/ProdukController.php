@@ -5,13 +5,25 @@ namespace App\Http\Controllers\Api;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use function PHPUnit\Framework\isTrue;
+use Illuminate\Support\Facades\Auth;
+
 
 use App\Http\Resources\dataProdukResource;
+use Illuminate\Auth\Access\AuthorizationException;
+
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Validator;
 
 class ProdukController extends Controller
 {
+    public function __construct()
+    {
+        //    panggil semua permission yang telah dibuat
+        $this->middleware('permission:lihat-produk', ['only' => ['index']]);
+        $this->middleware('permission:tambah-produk', ['only' => ['store']]);
+        $this->middleware('permission:edit-produk', ['only' => ['update']]);
+        $this->middleware('permission:hapus-produk', ['only' => ['destroy']]);
+    }
     public function index()
     {
         try {
@@ -29,8 +41,7 @@ class ProdukController extends Controller
     public function show($id)
     {
         try {
-            $produk = Produk::findOrFail($id);
-
+            $produk = Produk::where('user_id', Auth::user()->id)->findOrFail($id);
             return new dataProdukResource($produk);
         } catch (ModelNotFoundException $exception) {
             return response()->json([
@@ -43,14 +54,22 @@ class ProdukController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validasi = Validator::make($request->all(), [
             'nama_produk' => 'required|unique:produk|max:255',
             'kategori_id' => 'required',
             'harga' => 'required',
             'stok' => 'required',
             'deskripsi' => 'required',
-            'foto_produk' => 'required|mimes:jpg,png,jpeg|max:5048'
+            'foto_produk' => 'required|mimes:jpg,png,jpeg|max:15048'
         ]);
+
+        if ($validasi->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validasi->errors()
+            ], 422); // 422 adalah kode status untuk Unprocessable Entity
+        }
 
         if ($request->hasFile('foto_produk')) {
             $file = $request->file('foto_produk');
@@ -67,6 +86,9 @@ class ProdukController extends Controller
                 'stok' => $request->stok,
                 'deskripsi' => $request->deskripsi,
                 'foto_produk' => $nama_file,
+                //user_id ngambil dari user yang login
+                'user_id' => Auth::user()->id
+
             ]);
 
             return new dataProdukResource($produk);
@@ -76,19 +98,33 @@ class ProdukController extends Controller
                 'message' => 'Produk gagal ditambahkan',
                 'data' => $exception->getMessage()
             ], 400);
+        } catch (AuthorizationException $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Hak akses ditolak',
+                'data' => $exception->getMessage()
+            ], 403);
         }
     }
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $validasi = Validator::make($request->all(), [
             'nama_produk' => 'required|unique:produk|max:255',
             'kategori_id' => 'required',
             'harga' => 'required',
             'stok' => 'required',
             'deskripsi' => 'required',
-            'foto_produk' => 'required|mimes:jpg,png,jpeg|max:5048'
+            'foto_produk' => 'required|mimes:jpg,png,jpeg|max:15048'
         ]);
+
+        if ($validasi->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validasi->errors()
+            ], 422); // 422 adalah kode status untuk Unprocessable Entity
+        }
 
         if ($request->hasFile('foto_produk')) {
             $file = $request->file('foto_produk');
@@ -97,8 +133,30 @@ class ProdukController extends Controller
             $file->move($tujuan_upload, $nama_file);
         }
 
+
+        // if (!empty($produk)) {
+        //     // $produk = Produk::where('user_id', Auth::user()->id)->findOrFail($id);
+        //     $produk->update([
+        //         'nama_produk' => $request->nama_produk,
+        //         'kategori_id' => $request->kategori_id,
+        //         'harga' => $request->harga,
+        //         'stok' => $request->stok,
+        //         'deskripsi' => $request->deskripsi,
+        //         'foto_produk' => $nama_file,
+        //         'user_id' => Auth::user()->id
+        //     ]);
+        //     return new dataProdukResource($produk);
+        // } else {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Produk tidak ditemukan',
+        //         'data' => ''
+        //     ], 400);
+        // }
+
         try {
-            $produk = Produk::findOrFail($id);
+            // $produk = Produk::where('user_id', Auth::user()->id)->findOrFail($id);
+            $produk = Produk::where('user_id', Auth::user()->id)->findOrFail($id);
             $produk->update([
                 'nama_produk' => $request->nama_produk,
                 'kategori_id' => $request->kategori_id,
@@ -106,13 +164,13 @@ class ProdukController extends Controller
                 'stok' => $request->stok,
                 'deskripsi' => $request->deskripsi,
                 'foto_produk' => $nama_file,
+                'user_id' => Auth::user()->id
             ]);
-
             return new dataProdukResource($produk);
         } catch (ModelNotFoundException $exception) {
             return response()->json([
                 'success' => false,
-                'message' => 'Produk gagal diupdate',
+                'message' => 'Produk tidak ditemukan untuk dilakukan proses update',
                 'data' => $exception->getMessage()
             ], 400);
         }
@@ -122,9 +180,13 @@ class ProdukController extends Controller
     {
 
         try {
-            $produk = Produk::findOrFail($id);
+            $produk = Produk::where('user_id', Auth::user()->id)->findOrFail($id);
             $produk->delete();
-            return new dataProdukResource($produk);
+            return response()->json([
+                'success' => true,
+                'message' => 'Produk berhasil dihapus',
+                'data' => $produk
+            ], 200);
         } catch (ModelNotFoundException $exception) {
             return response()->json([
                 'success' => false,

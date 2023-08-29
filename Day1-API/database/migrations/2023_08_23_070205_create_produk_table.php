@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('stok');
             $table->text('deskripsi');
             $table->string('foto_produk');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
