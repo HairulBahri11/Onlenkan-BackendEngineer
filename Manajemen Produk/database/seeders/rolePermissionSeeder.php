@@ -18,6 +18,7 @@ class rolePermissionSeeder extends Seeder
         Permission::create(['name' => 'tambah-kategori']);
         Permission::create(['name' => 'edit-kategori']);
         Permission::create(['name' => 'hapus-kategori']);
+        Permission::create(['name' => 'tambah-admin']);
 
         Permission::create(['name' => 'lihat-produk']);
         Permission::create(['name' => 'tambah-produk']);
@@ -34,6 +35,7 @@ class rolePermissionSeeder extends Seeder
             'edit-kategori',
             'hapus-kategori',
             'lihat-produk',
+            'tambah-admin',
         ]);
 
         $role_penjual = Role::findByName('penjual');

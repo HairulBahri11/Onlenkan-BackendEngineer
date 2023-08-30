@@ -68,7 +68,7 @@ class ProdukController extends Controller
                 'success' => false,
                 'message' => 'Validasi gagal',
                 'errors' => $validasi->errors()
-            ], 422); // 422 adalah kode status untuk Unprocessable Entity
+            ], 422);
         }
 
         if ($request->hasFile('foto_produk')) {
