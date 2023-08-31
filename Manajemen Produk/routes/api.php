@@ -46,7 +46,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 });
 
 Route::get('role', 'App\Http\Controllers\Api\RoleController@index');
-Route::get('permission', 'App\Http\Controllers\Api\RoleController@permission_index');
 Route::post('role/store', 'App\Http\Controllers\Api\RoleController@store');
 Route::post('role/{id}/update', 'App\Http\Controllers\Api\RoleController@update');
 Route::delete('role/{id}/destroy', 'App\Http\Controllers\Api\RoleController@destroy');
+
+Route::get('permission', 'App\Http\Controllers\Api\RoleController@permission_index');
+Route::post('permission/store', 'App\Http\Controllers\Api\RoleController@permission_store');

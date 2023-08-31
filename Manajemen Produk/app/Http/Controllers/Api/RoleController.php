@@ -31,25 +31,7 @@ class RoleController extends Controller
         }
     }
 
-    public function permission_index()
-    {
 
-        try {
-            $permission = Permission::get();
-            // dd($permission);
-            return response()->json([
-                'success' => true,
-                'message' => 'Daftar data permission',
-                'data' => $permission,
-            ], 200);
-        } catch (ModelNotFoundException $exception) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Data permission kosong',
-                'data' => $exception->getMessage()
-            ], 404);
-        }
-    }
 
     public function store(Request $request)
     {
@@ -155,8 +137,8 @@ class RoleController extends Controller
 
         // $role->syncPermissions($request->input('permission'));
 
-        return redirect()->route('roles.index')
-            ->with('success', 'Role updated successfully');
+        // return redirect()->route('roles.index')
+        //     ->with('success', 'Role updated successfully');
     }
 
     public function destroy($id)
@@ -178,5 +160,142 @@ class RoleController extends Controller
         }
         // return redirect()->route('roles.index')
         //     ->with('success', 'Role deleted successfully');
+    }
+
+
+
+    //Permission
+    public function permission_index()
+    {
+
+        try {
+            $permission = Permission::get();
+            // dd($permission);
+            return response()->json([
+                'success' => true,
+                'message' => 'Daftar data permission',
+                'data' => $permission,
+            ], 200);
+        } catch (ModelNotFoundException $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data permission kosong',
+                'data' => $exception->getMessage()
+            ], 404);
+        }
+    }
+
+    // public function permission_store(Request $request)
+    // {
+    // $validasi = Validator::make($request->all(), [
+    //     'name' => 'required',
+    //     // 'give_to' => 'required',
+    // ]);
+
+    // if ($validasi->fails()) {
+    //     return response()->json([
+    //         'success' => false,
+    //         'message' => 'Validasi gagal',
+    //         'errors' => $validasi->errors()
+    //     ], 422);
+    // }
+
+    // try {
+    //     $permission = Permission::create(['name' => $request->input('name')]);
+    //     dd($permission);
+    //     //permission give to
+    //     $role_admin = Role::where('name', $request->input('give_to'))->get();
+
+    //     $role_admin->givePermissionTo([
+    //         ['name' => $request->input('name')]
+    //     ]);
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Data berhasil ditambahkan',
+    //         'data' => $permission,
+    //     ], 200);
+    // } catch (ModelNotFoundException $exception) {
+    //     return response()->json([
+    //         'success' => false,
+    //         'message' => 'Data permission gagal ditambahkan',
+    //         'data' => $exception->getMessage()
+    //     ], 404);
+    // }
+
+    public function permission_store(Request $request)
+    {
+        $validasi = Validator::make($request->all(), [
+            'name' => 'required',
+            'give_to' => 'required',
+        ]);
+
+        if ($validasi->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validasi->errors()
+            ], 422);
+        }
+
+        try {
+            $permission = Permission::create(['name' => $request->input('name')]);
+
+            // Jika 'give_to' sudah ada sebagai peran sebelumnya
+            $role = Role::findByName($request->input('give_to'));
+            if ($role) {
+                $permission->assignRole($role);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil ditambahkan',
+                'data' => $permission,
+            ], 200);
+        } catch (\Exception $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data permission gagal ditambahkan',
+                'data' => $exception->getMessage()
+            ], 500);
+        }
+    }
+
+    // }
+
+    public function permission_update(Request $request, $id)
+    {
+        $validasi = Validator::make($request->all(), [
+            'name' => 'required',
+            'give_to' => 'required',
+            // 'permission' => 'required',
+        ]);
+
+        if ($validasi->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validasi->errors()
+            ], 422);
+        }
+
+
+        try {
+            $permission = Permission::find($id);
+            $permission->name = $request->input('name');
+            $permission->save();
+            $permission->syncPermissions($request->input('permission'));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Update data role dan permission',
+                'data' => $permission,
+            ], 200);
+        } catch (ModelNotFoundException $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data role dan permission gagal diupdate',
+                'data' => $exception->getMessage()
+            ], 404);
+        }
     }
 }
