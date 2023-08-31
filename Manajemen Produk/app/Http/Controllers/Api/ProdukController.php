@@ -12,6 +12,7 @@ use App\Http\Resources\dataProdukResource;
 use Illuminate\Auth\Access\AuthorizationException;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class ProdukController extends Controller
@@ -74,8 +75,9 @@ class ProdukController extends Controller
         if ($request->hasFile('foto_produk')) {
             $file = $request->file('foto_produk');
             $nama_file = time() . "_" . $file->getClientOriginalName();
-            $tujuan_upload = 'images/produk/';
-            $file->move($tujuan_upload, $nama_file);
+            $tujuan_upload = 'public/images/produk/';
+            // $file->move($tujuan_upload, $nama_file);
+            $path = $request->file('foto_produk')->storeAs($tujuan_upload, $nama_file);
         }
 
         try {
@@ -181,7 +183,12 @@ class ProdukController extends Controller
 
         try {
             $produk = Produk::where('user_id', Auth::user()->id)->findOrFail($id);
+            $path = 'public/images/produk/';
+            Storage::delete($path . $produk->foto_produk);
+            //destroy from storage to
+
             $produk->delete();
+
             return response()->json([
                 'success' => true,
                 'message' => 'Produk berhasil dihapus',
