@@ -12,7 +12,7 @@ class LinkController extends Controller
 {
     public function index()
     {
-        $data = Link::all();
+        $data = Link::orderBy('order')->get();
         return response([
             'data' => $data
         ]);
@@ -125,13 +125,32 @@ class LinkController extends Controller
 
     public function destroy($id)
     {
-        // $data = Link::findOrFail($id);
-        // $allLinks = Link::orderBy('order')->get();
-        // //cek posisi data dulu
-        // //cek jika data ada di paling atas maka data yang ada dibawahnya masing masing order - 1
-        // if ($data->order > 1) {
-        //     $posisiData  = $allLinks[$data->order - 1];
 
-        // }
+
+        $data = Link::findOrFail($id);
+        // dd($data->order);
+        $allLinks = Link::orderBy('order')->get();
+        //posisi data yang diinginkan
+        $cekUrutan = $data->order;
+        $datadibawahnya = $allLinks[$cekUrutan];
+        // dd($datadibawahnya);
+        //cek jika di posisidatanya dibawahnya masih ada data lagi maka lakukan looping untuk menampilkan data tersebut
+        if (!empty($datadibawahnya)) {
+            for ($i = $data->order  - 1; $i < count($allLinks); $i++) {
+                $data->delete();
+                $cekdata = $allLinks[$i];
+                $cekdata->update(['order' => $cekdata->order - 1]);
+            }
+            return response([
+                'success' => true,
+                'message' => 'data berhasil dihapus dan data dibawahnya telah diurutkan kembali',
+            ]);
+        } {
+            $data->delete();
+            return response([
+                'success' => true,
+                'message' => 'data berada di posisi paling bawah dan telah dihapus',
+            ]);
+        }
     }
 }

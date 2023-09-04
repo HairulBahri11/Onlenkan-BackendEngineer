@@ -27,4 +27,5 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/links/store', 'App\Http\Controllers\LinkController@store');
     Route::post('/links/orderUpdate/{id}', 'App\Http\Controllers\LinkController@orderUpdate');
     // Route::post('/link/store', 'App\Http\Controllers\LinkController@store');
+    Route::get('/links/destroy/{id}', 'App\Http\Controllers\LinkController@destroy');
 });
