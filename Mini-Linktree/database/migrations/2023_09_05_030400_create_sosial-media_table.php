@@ -11,16 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('link_tree', function (Blueprint $table) {
+        Schema::create('sosial_media', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->enum('jenis_data', ['Icon', 'Gambar', 'Video']);
-            $table->string('data');
-            $table->integer('order');
+            $table->string('icon');
             $table->string('link');
-            $table->string('updated_by')->nullable();
-            $table->enum('warna', ['primary', 'secondary', 'light']);
-            $table->string('created_by');
+            $table->foreignId('users_id')->nullable()->references('id')->on('users');
             $table->timestamps();
         });
     }
@@ -30,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('link_tree');
+        Schema::dropIfExists('sosial_media');
     }
 };

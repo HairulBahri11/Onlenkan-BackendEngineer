@@ -23,7 +23,8 @@ class LinkController extends Controller
         // dd(Link::count());
         $validasi = Validator::make($request->all(), [
             'title' => 'required',
-            'icon' => 'required',
+            'jenis_data' => 'required',
+            'data' => 'required',
             // 'order' => 'required',
             'link' => 'required',
             'warna' => 'required',
@@ -42,7 +43,8 @@ class LinkController extends Controller
             // ambil data link jumlahnya berapa
             $data = Link::create([
                 'title' => $request->title,
-                'icon' => $request->icon,
+                'jenis_data' => $request->jenis_data,
+                'data' => $request->data,
                 //hitung keseluruhan data lalu ditambah 1
                 'order' => Link::count() + 1,
                 'link' => $request->link,

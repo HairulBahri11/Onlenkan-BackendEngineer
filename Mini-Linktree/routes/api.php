@@ -23,9 +23,16 @@ Route::post('/login', 'App\Http\Controllers\LoginController@login');
 
 //group API with auth sanctum middleware
 Route::group(['middleware' => ['auth:sanctum']], function () {
+
+    //LINK
     Route::get('/links', 'App\Http\Controllers\LinkController@index');
     Route::post('/links/store', 'App\Http\Controllers\LinkController@store');
     Route::post('/links/orderUpdate/{id}', 'App\Http\Controllers\LinkController@orderUpdate');
     // Route::post('/link/store', 'App\Http\Controllers\LinkController@store');
-    Route::get('/links/destroy/{id}', 'App\Http\Controllers\LinkController@destroy');
+    Route::delete('/links/destroy/{id}', 'App\Http\Controllers\LinkController@destroy');
+
+    //SOSIAl MEDIA
+    Route::get('/sosialmedia', 'App\Http\Controllers\SosialMediaController@index');
+    Route::post('/sosialmedia/store', 'App\Http\Controllers\SosialMediaController@store');
+    Route::delete('/sosialmedia/destroy/{id}', 'App\Http\Controllers\SosialMediaController@destroy');
 });
