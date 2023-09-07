@@ -35,4 +35,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/sosialmedia', 'App\Http\Controllers\SosialMediaController@index');
     Route::post('/sosialmedia/store', 'App\Http\Controllers\SosialMediaController@store');
     Route::delete('/sosialmedia/destroy/{id}', 'App\Http\Controllers\SosialMediaController@destroy');
+
+    //logout
+    Route::post('/logout/{id}', 'App\Http\Controllers\LoginController@logout');
 });

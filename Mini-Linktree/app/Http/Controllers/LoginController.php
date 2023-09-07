@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Passport\HasApiTokens;
 
 class LoginController extends Controller
 {
@@ -39,5 +40,23 @@ class LoginController extends Controller
         $user = User::where('email', $request->email)->get();
 
         return dataUserResource::collection($user);
+    }
+
+    public function logout($id)
+    {
+
+        try {
+            $data = User::find($id);
+            if ($data->id == Auth::user()->id) {
+                $data->tokens()->delete();
+                return response()->json([
+                    'message' => 'you are logout',
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 }
