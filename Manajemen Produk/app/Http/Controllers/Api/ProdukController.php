@@ -61,7 +61,7 @@ class ProdukController extends Controller
             'harga' => 'required',
             'stok' => 'required',
             'deskripsi' => 'required',
-            'foto_produk' => 'required|mimes:jpg,png,jpeg|max:15048'
+            // 'foto_produk' => 'required|mimes:jpg,png,jpeg|max:15048'
         ]);
 
         if ($validasi->fails()) {
@@ -72,13 +72,13 @@ class ProdukController extends Controller
             ], 422);
         }
 
-        if ($request->hasFile('foto_produk')) {
-            $file = $request->file('foto_produk');
-            $nama_file = time() . "_" . $file->getClientOriginalName();
-            $tujuan_upload = 'public/images/produk/';
-            // $file->move($tujuan_upload, $nama_file);
-            $path = $request->file('foto_produk')->storeAs($tujuan_upload, $nama_file);
-        }
+        // if ($request->hasFile('foto_produk')) {
+        //     $file = $request->file('foto_produk');
+        //     $nama_file = time() . "_" . $file->getClientOriginalName();
+        //     $tujuan_upload = 'public/images/produk/';
+        //     // $file->move($tujuan_upload, $nama_file);
+        //     $path = $request->file('foto_produk')->storeAs($tujuan_upload, $nama_file);
+        // }
 
         try {
             $produk = Produk::create([
@@ -87,7 +87,7 @@ class ProdukController extends Controller
                 'harga' => $request->harga,
                 'stok' => $request->stok,
                 'deskripsi' => $request->deskripsi,
-                'foto_produk' => $nama_file,
+                // 'foto_produk' => $nama_file,
                 //user_id ngambil dari user yang login
                 'user_id' => Auth::user()->id
 
@@ -134,27 +134,6 @@ class ProdukController extends Controller
             $tujuan_upload = 'images/produk/';
             $file->move($tujuan_upload, $nama_file);
         }
-
-
-        // if (!empty($produk)) {
-        //     // $produk = Produk::where('user_id', Auth::user()->id)->findOrFail($id);
-        //     $produk->update([
-        //         'nama_produk' => $request->nama_produk,
-        //         'kategori_id' => $request->kategori_id,
-        //         'harga' => $request->harga,
-        //         'stok' => $request->stok,
-        //         'deskripsi' => $request->deskripsi,
-        //         'foto_produk' => $nama_file,
-        //         'user_id' => Auth::user()->id
-        //     ]);
-        //     return new dataProdukResource($produk);
-        // } else {
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => 'Produk tidak ditemukan',
-        //         'data' => ''
-        //     ], 400);
-        // }
 
         try {
             // $produk = Produk::where('user_id', Auth::user()->id)->findOrFail($id);

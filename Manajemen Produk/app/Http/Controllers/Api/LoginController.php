@@ -35,17 +35,8 @@ class LoginController extends Controller
                 'message' => 'Unauthorized'
             ], 401);
         }
-        //get user
-        // $user = $request->user();
+        //get user5
         $user = User::where('email', $request->email)->get();
-        //create token
-        // $tokenResult = $user->createToken('authToken')->plainTextToken;
-        //send response
-        // return response()->json([
-        //     'message' => 'success',
-        //     'user' => $user,
-        //     'token' => $tokenResult
-        // ], 200);
 
         return userResource::collection($user);
     }

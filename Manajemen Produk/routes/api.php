@@ -40,6 +40,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/{id}/update', 'App\Http\Controllers\Api\ProdukController@update')->name('produk.update')->middleware('permission:edit-produk');
         Route::delete('/{id}/destroy', 'App\Http\Controllers\Api\ProdukController@destroy')->name('produk.destroy')->middleware('permission:hapus-produk');
     });
+    Route::prefix('galeri')->group(function () {
+        Route::get('/', 'App\Http\Controllers\Api\GaleriController@index')->name('galeri.index')->middleware('permission:lihat-galeri');
+        Route::get('/{id}/show', 'App\Http\Controllers\Api\GaleriController@show')->name('galeri.show')->middleware('permission:lihat-galeri');
+        Route::post('/store', 'App\Http\Controllers\Api\GaleriController@store')->name('galeri.store')->middleware('permission:tambah-galeri');
+        Route::post('/{id}/update', 'App\Http\Controllers\Api\GaleriController@update')->name('galeri.update')->middleware('permission:edit-galeri');
+        Route::delete('/{id}/destroy', 'App\Http\Controllers\Api\GaleriController@destroy')->name('galeri.destroy')->middleware('permission:hapus-galeri');
+    });
     Route::prefix('admin')->group(function () {
         Route::post('/store', 'App\Http\Controllers\Api\AdminController@store')->name('admin/store')->middleware('permission:tambah-admin');
     });
