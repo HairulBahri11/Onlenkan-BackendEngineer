@@ -47,6 +47,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/{id}/update', 'App\Http\Controllers\Api\GaleriController@update')->name('galeri.update')->middleware('permission:edit-galeri');
         Route::delete('/{id}/destroy', 'App\Http\Controllers\Api\GaleriController@destroy')->name('galeri.destroy')->middleware('permission:hapus-galeri');
     });
+    Route::prefix('toko')->group(function () {
+        Route::get('/', 'App\Http\Controllers\Api\TokoController@index')->name('toko.index')->middleware('permission:lihat-toko');
+        Route::get('/{id}/show', 'App\Http\Controllers\Api\TokoController@show')->name('toko.show')->middleware('permission:lihat-toko');
+        Route::post('/store', 'App\Http\Controllers\Api\TokoController@store')->name('toko.store')->middleware('permission:tambah-toko');
+        Route::post('/{id}/update', 'App\Http\Controllers\Api\TokoController@update')->name('toko.update')->middleware('permission:edit-toko');
+        Route::delete('/{id}/destroy', 'App\Http\Controllers\Api\TokoController@destroy')->name('toko.destroy')->middleware('permission:hapus-toko');
+    });
     Route::prefix('admin')->group(function () {
         Route::post('/store', 'App\Http\Controllers\Api\AdminController@store')->name('admin/store')->middleware('permission:tambah-admin');
     });
